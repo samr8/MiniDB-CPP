@@ -9,12 +9,14 @@ class Database
     std:: string currentDB;
 
     public:
+    Database();
     void createDatabase(const std::string &name);
     void useDatabase(const std:: string &name);
     void createTable(const std:: string&tableName, const std::vector<std::string> &columns);
-    void insertRow(const std:: string &tableName, const std::vector<std::string> &values);
+    void insertIntoTable(const std:: string &tableName, const std::vector<std::string> &values);
     void selectAll(const std::string &tableName);
     void dropTable(const std:: string &tableName);
+    void deleteFromTable(const std::string &tableName, const std::string &condition);
 
 };
 

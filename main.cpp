@@ -1,6 +1,8 @@
 #include "database.h"
 #include <iostream>
 #include <sstream>
+#include <algorithm> // for std::remove
+
 using namespace std;
 
 
@@ -37,7 +39,7 @@ int main() {
             vector<string> vals;
             string val;
             while (ss >> val) vals.push_back(val);
-            db.insertRow(tableName, vals);
+            db.insertIntoTable(tableName, vals);
         }
         else if (word == "SELECT") {
             string star, from, tableName; ss >> star >> from >> tableName;
@@ -47,9 +49,19 @@ int main() {
             string type, name; ss >> type >> name;
             if (type == "TABLE") db.dropTable(name);
         }
-        else if (word == "EXIT") {
+        else if (word == "EXIT" || word =="exit") {
             break;
         }
+        else if (word == "DELETE") {
+    string from, tableName, where;
+    ss >> from >> tableName >> where; // DELETE FROM table WHERE
+    string condition;
+    getline(ss, condition);           // rest of line contains "column=value"
+    condition.erase(0, condition.find_first_not_of(" ")); // trim leading spaces
+    db.deleteFromTable(tableName, condition);
+}
+
+
         else {
             cout << "Unknown command.\n";
         }
@@ -57,3 +69,4 @@ int main() {
     }
     return 0;
 }
+
