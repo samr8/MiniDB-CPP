@@ -3,6 +3,15 @@
 
 #include<string>
 #include<vector>
+#include<sstream>
+#include<fstream>
+#include<iostream>
+#include<filesystem>
+#include<algorithm>
+using namespace std;
+
+vector<string> split(const string& s, char delimiter);
+
 
 class Database
 {
@@ -17,6 +26,11 @@ class Database
     void selectAll(const std::string &tableName);
     void dropTable(const std:: string &tableName);
     void deleteFromTable(const std::string &tableName, const std::string &condition);
+void updateTable(const std::string& tableName,
+                 const std::string& updateColumn,
+                 const std::string& newValue,
+                 const std::string& whereColumn,
+                 const std::string& whereValue);
 
 };
 

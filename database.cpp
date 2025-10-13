@@ -220,3 +220,77 @@ void Database::deleteFromTable(const string& tableName, const string& condition)
     cout << deletedCount << " row(s) deleted where " << condition << ".\n";
 }
 
+void Database::updateTable(const std::string& tableName,
+                           const std::string& updateColumn,
+                           const std::string& newValue,
+                           const std::string& whereColumn,
+                           const std::string& whereValue)
+{
+    if (currentDB.empty()) {
+        cout << "No database selected. Use USE <dbname> first.\n";
+        return;
+    }
+
+    std::string filePath = currentDB + "/" + tableName + ".tbl";
+    std::ifstream inFile(filePath);
+    if (!inFile) {
+        std::cout << "Table '" << tableName << "' not found.\n";
+        return;
+    }
+
+    // Read header
+    std::string headerLine;
+    getline(inFile, headerLine);
+    std::vector<std::string> columns;
+    std::stringstream headerStream(headerLine);
+    std::string col;
+    while (getline(headerStream, col, ',')) columns.push_back(col);
+
+    // Find column indexes
+    int updateColIndex = -1, whereColIndex = -1;
+    for (int i = 0; i < columns.size(); ++i) {
+        if (columns[i] == updateColumn) updateColIndex = i;
+        if (columns[i] == whereColumn) whereColIndex = i;
+    }
+    if (updateColIndex == -1) { std::cout << "Column '" << updateColumn << "' not found.\n"; return; }
+    if (whereColIndex == -1) { std::cout << "Column '" << whereColumn << "' not found.\n"; return; }
+
+    // Read all rows
+    std::vector<std::vector<std::string>> rows;
+    std::string line;
+    while (getline(inFile, line)) {
+        std::stringstream ss(line);
+        std::vector<std::string> row;
+        std::string val;
+        while (getline(ss, val, ',')) row.push_back(val);
+        if (!row.empty()) rows.push_back(row);
+    }
+    inFile.close();
+
+    // Update matching rows
+    int updatedCount = 0;
+    for (size_t i = 1; i < rows.size(); ++i) { // skip header
+        if (rows[i][whereColIndex] == whereValue) {
+            rows[i][updateColIndex] = newValue;
+            updatedCount++;
+        }
+    }
+
+    // Rewrite file
+    std::ofstream outFile(filePath);
+    outFile << headerLine << "\n";
+    for (size_t i = 1; i < rows.size(); ++i) {
+        for (size_t j = 0; j < rows[i].size(); ++j) {
+            outFile << rows[i][j];
+            if (j < rows[i].size() - 1) outFile << ",";
+        }
+        outFile << "\n";
+    }
+    outFile.close();
+
+    std::cout << updatedCount << " row(s) updated in '" << tableName << "'.\n";
+}
+
+
+
+
