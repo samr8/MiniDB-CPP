@@ -10,7 +10,6 @@ def home():
 @app.route('/run', methods=['GET'])
 def run_minidb():
     try:
-        # Run your compiled C++ MiniDB executable
         result = subprocess.run(['./minidb'], capture_output=True, text=True)
         return jsonify({
             'output': result.stdout,
